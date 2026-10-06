@@ -186,7 +186,8 @@ std::vector<TypeHit> scan_type_descriptors(const PEView& view) {
             if (!looks_like_type_descriptor(view, off)) continue;
             TypeHit hit;
             hit.offset = off;
-            hit.rva    = s.VirtualAddress + (off - s.PointerToRawData);
+            hit.rva    = static_cast<std::uint32_t>(
+                s.VirtualAddress + (off - s.PointerToRawData));
             hit.mangled = reinterpret_cast<const char*>(view.data + off) +
                           offsetof(TypeDescriptor, name);
             hits.push_back(std::move(hit));
@@ -222,7 +223,8 @@ std::vector<COLHit> scan_cols(const PEView& view,
             if (col->signature != 1) continue;
             if (col->pTypeDescriptor == 0 || col->pClassDescriptor == 0) continue;
             if (!type_rvas.count(col->pTypeDescriptor)) continue;
-            const auto col_rva = s.VirtualAddress + (off - s.PointerToRawData);
+            const auto col_rva = static_cast<std::uint32_t>(
+                s.VirtualAddress + (off - s.PointerToRawData));
             if (col->pSelf != col_rva) continue;
             cols.push_back(COLHit{off, col_rva, col->pTypeDescriptor, col->pClassDescriptor});
         }
