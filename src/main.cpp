@@ -23,6 +23,48 @@
 #include <unordered_set>
 #include <vector>
 
+namespace demangle {
+
+// Simple MSVC type_info name demangler.
+// Handles the common ".?A[VUW]Name@ns@...@@" form by stripping the
+// RTTI prefix (`.?A`), stripping the trailing `@@`, splitting the body
+// on `@`, reversing, and joining with `::`.
+//
+// Template names (identified by the `?$` sequence) are returned as-is;
+// their parameter grammar is non-trivial to parse and out of scope here.
+inline std::string type_info(const std::string& mangled) {
+    if (mangled.size() < 6) return mangled;
+    if (mangled[0] != '.' || mangled[1] != '?' || mangled[2] != 'A') return mangled;
+    const char tag = mangled[3];
+    if (tag != 'V' && tag != 'U' && tag != 'W') return mangled;
+    if (mangled.compare(mangled.size() - 2, 2, "@@") != 0) return mangled;
+
+    const auto body = mangled.substr(4, mangled.size() - 4 - 2);
+    if (body.find("?$") != std::string::npos) return mangled;  // template, bail
+
+    std::vector<std::string> parts;
+    std::string cur;
+    for (char c : body) {
+        if (c == '@') {
+            if (!cur.empty()) parts.push_back(cur);
+            cur.clear();
+        } else {
+            cur.push_back(c);
+        }
+    }
+    if (!cur.empty()) parts.push_back(cur);
+    if (parts.empty()) return mangled;
+
+    std::string out;
+    for (std::size_t i = parts.size(); i > 0; --i) {
+        if (!out.empty()) out += "::";
+        out += parts[i - 1];
+    }
+    return out;
+}
+
+}  // namespace demangle
+
 namespace {
 
 // MSVC RTTI structures. Field layout is stable since VS2008.
@@ -276,13 +318,26 @@ void print_hierarchy(const PEView& view, const COLHit& col) {
 }  // namespace
 
 int main(int argc, char** argv) {
-    if (argc != 2) {
-        std::fprintf(stderr, "usage: %s <file.exe|file.dll>\n",
+    bool demangle_names = false;
+    const char* path = nullptr;
+
+    for (int i = 1; i < argc; ++i) {
+        if (std::strcmp(argv[i], "--demangle") == 0 ||
+            std::strcmp(argv[i], "-d") == 0) {
+            demangle_names = true;
+        } else if (!path) {
+            path = argv[i];
+        }
+    }
+
+    if (!path) {
+        std::fprintf(stderr,
+                     "usage: %s [--demangle|-d] <file.exe|file.dll>\n",
                      argc ? argv[0] : "rtti-dump");
         return 2;
     }
 
-    auto image = read_file(argv[1]);
+    auto image = read_file(path);
     auto view  = load_pe(image);
 
     std::printf("[*] scanning for type descriptors in .data / .rdata ...\n");
@@ -296,10 +351,30 @@ int main(int argc, char** argv) {
     const auto cols = scan_cols(view, type_rvas);
     std::printf("    found %zu COL(s)\n\n", cols.size());
 
+    const auto show = [&](const std::string& raw) {
+        return demangle_names ? demangle::type_info(raw) : raw;
+    };
+
     for (const auto& col : cols) {
-        const auto name = type_name_from_rva(view, col.type_rva);
-        std::printf("class %s\n", name.c_str());
-        print_hierarchy(view, col);
+        const auto raw = type_name_from_rva(view, col.type_rva);
+        std::printf("class %s\n", show(raw).c_str());
+
+        // Walk and print the base class list with the same demangle setting.
+        const auto* chd = view.at_rva<ClassHierarchyDescriptor>(col.class_desc_rva);
+        if (!chd) { std::printf("    <class hierarchy descriptor unresolved>\n\n"); continue; }
+        const auto base_array_off = view.rva_to_offset(chd->pBaseClassArray);
+        if (!base_array_off) { std::printf("    <base class array unresolved>\n\n"); continue; }
+        const auto* base_rvas = reinterpret_cast<const std::uint32_t*>(
+            view.data + *base_array_off);
+        std::printf("    base classes (%u):\n", chd->numBaseClasses);
+        for (std::uint32_t i = 0; i < chd->numBaseClasses; ++i) {
+            const auto* bcd = view.at_rva<BaseClassDescriptor>(base_rvas[i]);
+            if (!bcd) { std::printf("      [%u] <unresolved>\n", i); continue; }
+            const auto base_name = type_name_from_rva(view, bcd->pTypeDescriptor);
+            std::printf("      [%u] %s  (mdisp=%d pdisp=%d vdisp=%d)\n",
+                        i, show(base_name).c_str(),
+                        bcd->where.mdisp, bcd->where.pdisp, bcd->where.vdisp);
+        }
         std::printf("\n");
     }
 

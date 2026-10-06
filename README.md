@@ -50,7 +50,14 @@ cmake --build build --config Release
 
 ```powershell
 rtti-dump.exe path\to\binary.exe
+rtti-dump.exe --demangle path\to\binary.exe
 ```
+
+### Flags
+
+| flag             | effect |
+|------------------|--------|
+| `--demangle`, `-d` | run a simple MSVC type_info demangler on class names (e.g. `.?AVWidget@ui@@` → `ui::Widget`). Template names, which have a non-trivial parameter grammar, are left in their mangled form. |
 
 ## Example output
 
@@ -75,12 +82,15 @@ class .?AVButton@ui@@
 
 ## Demangling
 
-Names come out mangled (`.?AVWidget@ui@@` → `ui::Widget`). To demangle,
-pipe through `undname.exe` from the Visual Studio tools or
-`__unDName` / `UnDecorateSymbolName` from the DbgHelp API.
+The `--demangle` / `-d` flag enables a small built-in demangler for the
+common type_info name form (`.?A[VU]Name@ns@...@@` → `ns::Name`).
+Template names are detected via the `?$` sequence and returned in their
+mangled form; a full MSVC name demangler would need to parse the
+parameter grammar, which is non-trivial.
 
-A built-in demangler would be a worthwhile extension — contributions
-welcome.
+For template demangling, pipe output through `undname.exe` from the
+Visual Studio tools, or call `__unDName` / `UnDecorateSymbolName` from
+the DbgHelp API in your own code.
 
 ## Scope and limits
 
