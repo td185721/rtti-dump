@@ -1,0 +1,81 @@
+[*] scanning for type descriptors in .data / .rdata ...
+    found 14 candidate type descriptor(s)
+[*] scanning for Complete Object Locators ...
+    found 14 COL(s)
+
+class .?AUCircle@shapes@@
+    base classes (2):
+      [0] .?AUCircle@shapes@@  (mdisp=0 pdisp=-1 vdisp=0)
+      [1] .?AUShape@shapes@@  (mdisp=0 pdisp=-1 vdisp=0)
+
+class .?AUSquare@shapes@@
+    base classes (2):
+      [0] .?AUSquare@shapes@@  (mdisp=0 pdisp=-1 vdisp=0)
+      [1] .?AUShape@shapes@@  (mdisp=0 pdisp=-1 vdisp=0)
+
+class .?AUBuffer@io@@
+    base classes (3):
+      [0] .?AUBuffer@io@@  (mdisp=0 pdisp=-1 vdisp=0)
+      [1] .?AUReader@io@@  (mdisp=0 pdisp=-1 vdisp=0)
+      [2] .?AUWriter@io@@  (mdisp=8 pdisp=-1 vdisp=0)
+
+class .?AUBuffer@io@@
+    base classes (3):
+      [0] .?AUBuffer@io@@  (mdisp=0 pdisp=-1 vdisp=0)
+      [1] .?AUReader@io@@  (mdisp=0 pdisp=-1 vdisp=0)
+      [2] .?AUWriter@io@@  (mdisp=8 pdisp=-1 vdisp=0)
+
+class .?AUNode@@
+    base classes (1):
+      [0] .?AUNode@@  (mdisp=0 pdisp=-1 vdisp=0)
+
+class .?AULeft@@
+    base classes (2):
+      [0] .?AULeft@@  (mdisp=0 pdisp=-1 vdisp=0)
+      [1] .?AUNode@@  (mdisp=0 pdisp=0 vdisp=4)
+
+class .?AURight@@
+    base classes (2):
+      [0] .?AURight@@  (mdisp=0 pdisp=-1 vdisp=0)
+      [1] .?AUNode@@  (mdisp=0 pdisp=8 vdisp=4)
+
+class .?AURight@@
+    base classes (2):
+      [0] .?AURight@@  (mdisp=0 pdisp=-1 vdisp=0)
+      [1] .?AUNode@@  (mdisp=0 pdisp=8 vdisp=4)
+
+class .?AUDiamond@@
+    base classes (5):
+      [0] .?AUDiamond@@  (mdisp=0 pdisp=-1 vdisp=0)
+      [1] .?AULeft@@  (mdisp=16 pdisp=-1 vdisp=0)
+      [2] .?AUNode@@  (mdisp=0 pdisp=16 vdisp=4)
+      [3] .?AURight@@  (mdisp=0 pdisp=-1 vdisp=0)
+      [4] .?AUNode@@  (mdisp=0 pdisp=16 vdisp=4)
+
+class .?AUDiamond@@
+    base classes (5):
+      [0] .?AUDiamond@@  (mdisp=0 pdisp=-1 vdisp=0)
+      [1] .?AULeft@@  (mdisp=16 pdisp=-1 vdisp=0)
+      [2] .?AUNode@@  (mdisp=0 pdisp=16 vdisp=4)
+      [3] .?AURight@@  (mdisp=0 pdisp=-1 vdisp=0)
+      [4] .?AUNode@@  (mdisp=0 pdisp=16 vdisp=4)
+
+class .?AVtype_info@@
+    base classes (1):
+      [0] .?AVtype_info@@  (mdisp=0 pdisp=-1 vdisp=0)
+
+class .?AVexception@std@@
+    base classes (1):
+      [0] .?AVexception@std@@  (mdisp=0 pdisp=-1 vdisp=0)
+
+class .?AVbad_array_new_length@std@@
+    base classes (3):
+      [0] .?AVbad_array_new_length@std@@  (mdisp=0 pdisp=-1 vdisp=0)
+      [1] .?AVbad_alloc@std@@  (mdisp=0 pdisp=-1 vdisp=0)
+      [2] .?AVexception@std@@  (mdisp=0 pdisp=-1 vdisp=0)
+
+class .?AVbad_alloc@std@@
+    base classes (2):
+      [0] .?AVbad_alloc@std@@  (mdisp=0 pdisp=-1 vdisp=0)
+      [1] .?AVexception@std@@  (mdisp=0 pdisp=-1 vdisp=0)
+

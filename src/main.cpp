@@ -9,9 +9,10 @@
 // disk. See https://blog.quarkslab.com/visual-c-rtti-inspection.html and
 // the Microsoft documentation on type_info for background.
 //
-// Build: CMake 3.15+, MSVC or MinGW-w64 (C++17). x64 PE only.
+// Build: CMake 3.15+, C++17 (MSVC, MinGW-w64, GCC or Clang). Reads x64 PE
+// files on any host OS.
 
-#include <windows.h>
+#include "pe_format.hpp"
 
 #include <cstdint>
 #include <cstdio>
@@ -106,6 +107,16 @@ struct CompleteObjectLocator {
 };
 #pragma pack(pop)
 
+// NUL-terminated string at `offset`, cut off at the end of the file if the
+// terminator is missing.
+std::string cstr_at(const unsigned char* data, std::size_t size, std::size_t offset) {
+    std::string out;
+    for (std::size_t i = offset; i < size && data[i] != 0; ++i) {
+        out.push_back(static_cast<char>(data[i]));
+    }
+    return out;
+}
+
 std::vector<unsigned char> read_file(const std::string& path) {
     std::ifstream in(path, std::ios::binary);
     if (!in) {
@@ -164,14 +175,26 @@ PEView load_pe(const std::vector<unsigned char>& image) {
         std::fprintf(stderr, "error: not a PE file\n");
         std::exit(1);
     }
-    const auto* nt = reinterpret_cast<const IMAGE_NT_HEADERS64*>(
-        image.data() + dos->e_lfanew);
+    const auto nt_off = static_cast<std::size_t>(static_cast<DWORD>(dos->e_lfanew));
+    if (nt_off > image.size() || image.size() - nt_off < sizeof(IMAGE_NT_HEADERS64)) {
+        std::fprintf(stderr, "error: NT headers lie outside the file\n");
+        std::exit(1);
+    }
+    const auto* nt = reinterpret_cast<const IMAGE_NT_HEADERS64*>(image.data() + nt_off);
     if (nt->Signature != IMAGE_NT_SIGNATURE) {
         std::fprintf(stderr, "error: missing PE signature\n");
         std::exit(1);
     }
     if (nt->OptionalHeader.Magic != IMAGE_NT_OPTIONAL_HDR64_MAGIC) {
         std::fprintf(stderr, "error: only x64 PE files are supported\n");
+        std::exit(1);
+    }
+    const auto sections_off = nt_off + offsetof(IMAGE_NT_HEADERS64, OptionalHeader) +
+                              nt->FileHeader.SizeOfOptionalHeader;
+    const auto sections_len = std::size_t{nt->FileHeader.NumberOfSections} *
+                              sizeof(IMAGE_SECTION_HEADER);
+    if (sections_off > image.size() || image.size() - sections_off < sections_len) {
+        std::fprintf(stderr, "error: section table lies outside the file\n");
         std::exit(1);
     }
     view.nt            = nt;
@@ -277,42 +300,7 @@ std::vector<COLHit> scan_cols(const PEView& view,
 std::string type_name_from_rva(const PEView& view, std::uint32_t rva) {
     const auto off = view.rva_to_offset(rva);
     if (!off) return "<unresolved>";
-    const char* name = reinterpret_cast<const char*>(view.data + *off) +
-                       offsetof(TypeDescriptor, name);
-    return name;
-}
-
-void print_hierarchy(const PEView& view, const COLHit& col) {
-    const auto* chd = view.at_rva<ClassHierarchyDescriptor>(col.class_desc_rva);
-    if (!chd) {
-        std::printf("    <class hierarchy descriptor unresolved>\n");
-        return;
-    }
-
-    const auto base_array_off = view.rva_to_offset(chd->pBaseClassArray);
-    if (!base_array_off) {
-        std::printf("    <base class array unresolved>\n");
-        return;
-    }
-    const auto* base_rvas = reinterpret_cast<const std::uint32_t*>(
-        view.data + *base_array_off);
-    const std::uint32_t total_bytes = chd->numBaseClasses * sizeof(std::uint32_t);
-    if (*base_array_off + total_bytes > view.size) {
-        std::printf("    <base class array truncated>\n");
-        return;
-    }
-
-    std::printf("    base classes (%u):\n", chd->numBaseClasses);
-    for (std::uint32_t i = 0; i < chd->numBaseClasses; ++i) {
-        const auto* bcd = view.at_rva<BaseClassDescriptor>(base_rvas[i]);
-        if (!bcd) {
-            std::printf("      [%u] <unresolved>\n", i);
-            continue;
-        }
-        const auto name = type_name_from_rva(view, bcd->pTypeDescriptor);
-        std::printf("      [%u] %s  (mdisp=%d pdisp=%d vdisp=%d)\n",
-                    i, name.c_str(), bcd->where.mdisp, bcd->where.pdisp, bcd->where.vdisp);
-    }
+    return cstr_at(view.data, view.size, *off + offsetof(TypeDescriptor, name));
 }
 
 }  // namespace
@@ -364,6 +352,10 @@ int main(int argc, char** argv) {
         if (!chd) { std::printf("    <class hierarchy descriptor unresolved>\n\n"); continue; }
         const auto base_array_off = view.rva_to_offset(chd->pBaseClassArray);
         if (!base_array_off) { std::printf("    <base class array unresolved>\n\n"); continue; }
+        if (chd->numBaseClasses > (view.size - *base_array_off) / sizeof(std::uint32_t)) {
+            std::printf("    <base class array truncated>\n\n");
+            continue;
+        }
         const auto* base_rvas = reinterpret_cast<const std::uint32_t*>(
             view.data + *base_array_off);
         std::printf("    base classes (%u):\n", chd->numBaseClasses);

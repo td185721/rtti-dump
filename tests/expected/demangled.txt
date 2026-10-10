@@ -1,0 +1,81 @@
+[*] scanning for type descriptors in .data / .rdata ...
+    found 14 candidate type descriptor(s)
+[*] scanning for Complete Object Locators ...
+    found 14 COL(s)
+
+class shapes::Circle
+    base classes (2):
+      [0] shapes::Circle  (mdisp=0 pdisp=-1 vdisp=0)
+      [1] shapes::Shape  (mdisp=0 pdisp=-1 vdisp=0)
+
+class shapes::Square
+    base classes (2):
+      [0] shapes::Square  (mdisp=0 pdisp=-1 vdisp=0)
+      [1] shapes::Shape  (mdisp=0 pdisp=-1 vdisp=0)
+
+class io::Buffer
+    base classes (3):
+      [0] io::Buffer  (mdisp=0 pdisp=-1 vdisp=0)
+      [1] io::Reader  (mdisp=0 pdisp=-1 vdisp=0)
+      [2] io::Writer  (mdisp=8 pdisp=-1 vdisp=0)
+
+class io::Buffer
+    base classes (3):
+      [0] io::Buffer  (mdisp=0 pdisp=-1 vdisp=0)
+      [1] io::Reader  (mdisp=0 pdisp=-1 vdisp=0)
+      [2] io::Writer  (mdisp=8 pdisp=-1 vdisp=0)
+
+class Node
+    base classes (1):
+      [0] Node  (mdisp=0 pdisp=-1 vdisp=0)
+
+class Left
+    base classes (2):
+      [0] Left  (mdisp=0 pdisp=-1 vdisp=0)
+      [1] Node  (mdisp=0 pdisp=0 vdisp=4)
+
+class Right
+    base classes (2):
+      [0] Right  (mdisp=0 pdisp=-1 vdisp=0)
+      [1] Node  (mdisp=0 pdisp=8 vdisp=4)
+
+class Right
+    base classes (2):
+      [0] Right  (mdisp=0 pdisp=-1 vdisp=0)
+      [1] Node  (mdisp=0 pdisp=8 vdisp=4)
+
+class Diamond
+    base classes (5):
+      [0] Diamond  (mdisp=0 pdisp=-1 vdisp=0)
+      [1] Left  (mdisp=16 pdisp=-1 vdisp=0)
+      [2] Node  (mdisp=0 pdisp=16 vdisp=4)
+      [3] Right  (mdisp=0 pdisp=-1 vdisp=0)
+      [4] Node  (mdisp=0 pdisp=16 vdisp=4)
+
+class Diamond
+    base classes (5):
+      [0] Diamond  (mdisp=0 pdisp=-1 vdisp=0)
+      [1] Left  (mdisp=16 pdisp=-1 vdisp=0)
+      [2] Node  (mdisp=0 pdisp=16 vdisp=4)
+      [3] Right  (mdisp=0 pdisp=-1 vdisp=0)
+      [4] Node  (mdisp=0 pdisp=16 vdisp=4)
+
+class type_info
+    base classes (1):
+      [0] type_info  (mdisp=0 pdisp=-1 vdisp=0)
+
+class std::exception
+    base classes (1):
+      [0] std::exception  (mdisp=0 pdisp=-1 vdisp=0)
+
+class std::bad_array_new_length
+    base classes (3):
+      [0] std::bad_array_new_length  (mdisp=0 pdisp=-1 vdisp=0)
+      [1] std::bad_alloc  (mdisp=0 pdisp=-1 vdisp=0)
+      [2] std::exception  (mdisp=0 pdisp=-1 vdisp=0)
+
+class std::bad_alloc
+    base classes (2):
+      [0] std::bad_alloc  (mdisp=0 pdisp=-1 vdisp=0)
+      [1] std::exception  (mdisp=0 pdisp=-1 vdisp=0)
+
