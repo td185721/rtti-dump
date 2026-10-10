@@ -203,16 +203,6 @@ PEView load_pe(const std::vector<unsigned char>& image) {
     return view;
 }
 
-const IMAGE_SECTION_HEADER* find_section(const PEView& view, const char* name) {
-    for (WORD i = 0; i < view.section_count; ++i) {
-        if (std::strncmp(reinterpret_cast<const char*>(view.sections[i].Name),
-                         name, 8) == 0) {
-            return &view.sections[i];
-        }
-    }
-    return nullptr;
-}
-
 bool looks_like_type_descriptor(const PEView& view, std::size_t offset) {
     const auto* td = view.at_off<TypeDescriptor>(offset);
     if (!td) return false;
