@@ -3,15 +3,15 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/td185721/rtti-dump/actions/workflows/ci.yml"><img src="https://github.com/td185721/rtti-dump/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
-  <a href="https://github.com/td185721/rtti-dump/releases/latest"><img src="https://img.shields.io/github/v/release/td185721/rtti-dump?color=d2a8ff" alt="Latest release"></a>
+  <a href="https://github.com/sheranton/rtti-dump/actions/workflows/ci.yml"><img src="https://github.com/sheranton/rtti-dump/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
+  <a href="https://github.com/sheranton/rtti-dump/releases/latest"><img src="https://img.shields.io/github/v/release/sheranton/rtti-dump?color=d2a8ff" alt="Latest release"></a>
   <img src="https://img.shields.io/badge/C%2B%2B-17-00599C?logo=cplusplus&logoColor=white" alt="C++17">
   <img src="https://img.shields.io/badge/runs%20on-Windows%20%7C%20Linux%20%7C%20macOS-30363d" alt="Runs on Windows, Linux and macOS">
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue" alt="MIT license"></a>
 </p>
 
 <p align="center">
-  <sub><b>Toolkit:</b> <a href="https://github.com/td185721/pe-walker">pe-walker</a> · <a href="https://github.com/td185721/pe-diff">pe-diff</a> · <b>rtti-dump</b> · <a href="https://github.com/td185721/vtable-dump">vtable-dump</a> · <a href="https://github.com/td185721/pattern-scan">pattern-scan</a> · <a href="https://github.com/td185721/unwind-map">unwind-map</a></sub>
+  <sub><b>Toolkit:</b> <a href="https://github.com/sheranton/pe-walker">pe-walker</a> · <a href="https://github.com/sheranton/pe-diff">pe-diff</a> · <b>rtti-dump</b> · <a href="https://github.com/sheranton/vtable-dump">vtable-dump</a> · <a href="https://github.com/sheranton/pattern-scan">pattern-scan</a> · <a href="https://github.com/sheranton/unwind-map">unwind-map</a></sub>
 </p>
 
 `rtti-dump` recovers C++ class hierarchies from x64 Windows binaries built with MSVC. It finds the Run-Time Type Information that the compiler emits for every polymorphic class (it has to, for `dynamic_cast` and `typeid`), even when the binary has no symbols. For each class it prints the base classes and where each base subobject lives inside the object. Single, multiple and virtual inheritance are all covered.
@@ -113,7 +113,7 @@ Every pointer in these structures is an RVA on x64, so the tool works on the fil
 
 ## Install
 
-Download a prebuilt binary for Windows x64, Linux x64 (statically linked) or macOS arm64 from the [latest release](https://github.com/td185721/rtti-dump/releases/latest), or build from source with CMake 3.15+ and any C++17 compiler:
+Download a prebuilt binary for Windows x64, Linux x64 (statically linked) or macOS arm64 from the [latest release](https://github.com/sheranton/rtti-dump/releases/latest), or build from source with CMake 3.15+ and any C++17 compiler:
 
 ```sh
 cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
@@ -142,7 +142,7 @@ The built-in demangler handles the common `.?A[VUW]Name@ns@...@@` form. Template
 
 - **x64 only.** 32-bit MSVC RTTI uses absolute pointers instead of RVAs and is rejected with a clear error.
 - **MSVC only.** MinGW and Clang (with the Itanium ABI) emit a different RTTI layout.
-- **Classes, not vtables.** It recovers class metadata. To see where each vtable lives and what is in its slots, use [vtable-dump](https://github.com/td185721/vtable-dump).
+- **Classes, not vtables.** It recovers class metadata. To see where each vtable lives and what is in its slots, use [vtable-dump](https://github.com/sheranton/vtable-dump).
 - **Heuristic first pass.** `TypeDescriptor` candidates are found by their `.?A` prefix; the COL self-reference check then filters out strings that only look like RTTI.
 
 ## Testing
