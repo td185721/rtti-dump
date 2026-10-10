@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="640" height="600" viewBox="0 0 640.0 600.5" role="img" aria-label="rtti-dump: class hierarchies as a tree and as Mermaid">
+  <style>
+    text { font-family: ui-monospace, 'JetBrains Mono', 'Cascadia Code', SFMono-Regular, Consolas, 'Liberation Mono', Menlo, monospace; font-size: 13.2px; }
+  .l { opacity: 0; animation: show 0.01s steps(1, end) forwards; }
+  @keyframes show { to { opacity: 1; } }
+  @keyframes hide { to { opacity: 0; } }
+  .cursor { animation: blink 1.06s step-end infinite; }
+  @keyframes blink { 50% { opacity: 0; } }
+  @keyframes type0 { to { transform: translateX(318.0px); } }
+  .ty0 { animation: type0 1.20s steps(40, end) 0.60s both; }
+  .cu0 { animation: hide 0.01s steps(1, end) 1.80s forwards; }
+  @keyframes type22 { to { transform: translateX(373.7px); } }
+  .ty22 { animation: type22 1.41s steps(47, end) 3.74s both; }
+  .cu22 { animation: hide 0.01s steps(1, end) 5.15s forwards; }
+  @media (prefers-reduced-motion: reduce) { .l { animation: none; opacity: 1; } .cover { display: none; } g[class^="ty"], .cursor { animation: none; } }
+  </style>
+  <rect x="0.75" y="0.75" width="638.5" height="599.0" rx="12" fill="#0d1117" stroke="#30363d" stroke-width="1.5"/>
+  <path d="M0.75 36V12.75a12 12 0 0 1 12-12h614.5a12 12 0 0 1 12 12V36z" fill="#161b22"/>
+  <line x1="0.75" y1="36" x2="639.2" y2="36" stroke="#30363d"/>
+  <circle cx="20" cy="18.0" r="5.5" fill="#ff5f57"/><circle cx="38" cy="18.0" r="5.5" fill="#febc2e"/><circle cx="56" cy="18.0" r="5.5" fill="#28c840"/>
+  <text x="320.0" y="22.5" text-anchor="middle" fill="#8b949e" font-size="12">rtti-dump: class hierarchies as a tree and as Mermaid</text>
+  <g class="l" style="animation-delay: 0.60s"><text x="22" y="68.5" textLength="333.9" lengthAdjust="spacing" xml:space="preserve"><tspan fill="#7ee787" font-weight="700">$ </tspan><tspan fill="#e6edf3" font-weight="700">rtti-dump --tree --demangle sample64.dll</tspan></text><g class="ty0"><rect class="cover" x="37.9" y="54.0" width="602.1" height="19.5" fill="#0d1117"/><rect class="cu0 cover" x="37.9" y="57.0" width="8.0" height="14.5" fill="#e6edf3" opacity="0.85"/></g></g>
+  <text x="22" y="88.0" textLength="437.2" lengthAdjust="spacing" class="l" style="animation-delay: 2.20s" xml:space="preserve"><tspan fill="#6e7681">[*] scanning for type descriptors in .data / .rdata ...</tspan></text>
+  <text x="22" y="107.5" textLength="325.9" lengthAdjust="spacing" class="l" style="animation-delay: 2.25s" xml:space="preserve"><tspan fill="#6e7681">    found 14 candidate type descriptor(s)</tspan></text>
+  <text x="22" y="127.0" textLength="357.8" lengthAdjust="spacing" class="l" style="animation-delay: 2.29s" xml:space="preserve"><tspan fill="#6e7681">[*] scanning for Complete Object Locators ...</tspan></text>
+  <text x="22" y="146.5" textLength="151.1" lengthAdjust="spacing" class="l" style="animation-delay: 2.33s" xml:space="preserve"><tspan fill="#6e7681">    found 14 COL(s)</tspan></text>
+  <text x="22" y="166.0" class="l" style="animation-delay: 2.38s" xml:space="preserve"></text>
+  <text x="22" y="185.5" textLength="23.9" lengthAdjust="spacing" class="l" style="animation-delay: 2.42s" xml:space="preserve"><tspan fill="#6e7681">  ⋮</tspan></text>
+  <text x="22" y="205.0" textLength="79.5" lengthAdjust="spacing" class="l" style="animation-delay: 2.47s" xml:space="preserve"><tspan fill="#e6edf3" font-weight="700">io::Buffer</tspan></text>
+  <text x="22" y="224.5" textLength="111.3" lengthAdjust="spacing" class="l" style="animation-delay: 2.51s" xml:space="preserve"><tspan fill="#e6edf3">├── </tspan><tspan fill="#56d4dd">io::Reader</tspan></text>
+  <text x="22" y="244.0" textLength="159.0" lengthAdjust="spacing" class="l" style="animation-delay: 2.56s" xml:space="preserve"><tspan fill="#e6edf3">└── </tspan><tspan fill="#56d4dd">io::Writer</tspan><tspan fill="#e6edf3">  </tspan><tspan fill="#6e7681">+0x8</tspan></text>
+  <text x="22" y="263.5" class="l" style="animation-delay: 2.60s" xml:space="preserve"></text>
+  <text x="22" y="283.0" textLength="23.9" lengthAdjust="spacing" class="l" style="animation-delay: 2.65s" xml:space="preserve"><tspan fill="#6e7681">  ⋮</tspan></text>
+  <text x="22" y="302.5" textLength="55.6" lengthAdjust="spacing" class="l" style="animation-delay: 2.69s" xml:space="preserve"><tspan fill="#e6edf3" font-weight="700">Diamond</tspan></text>
+  <text x="22" y="322.0" textLength="119.2" lengthAdjust="spacing" class="l" style="animation-delay: 2.74s" xml:space="preserve"><tspan fill="#e6edf3">├── </tspan><tspan fill="#56d4dd">Left</tspan><tspan fill="#e6edf3">  </tspan><tspan fill="#6e7681">+0x10</tspan></text>
+  <text x="22" y="341.5" textLength="182.8" lengthAdjust="spacing" class="l" style="animation-delay: 2.78s" xml:space="preserve"><tspan fill="#e6edf3">│   └── </tspan><tspan fill="#56d4dd">Node</tspan><tspan fill="#e6edf3">  </tspan><tspan fill="#e3b341">(virtual)</tspan></text>
+  <text x="22" y="361.0" textLength="71.5" lengthAdjust="spacing" class="l" style="animation-delay: 2.83s" xml:space="preserve"><tspan fill="#e6edf3">└── </tspan><tspan fill="#56d4dd">Right</tspan></text>
+  <text x="22" y="380.5" textLength="182.8" lengthAdjust="spacing" class="l" style="animation-delay: 2.87s" xml:space="preserve"><tspan fill="#e6edf3">    └── </tspan><tspan fill="#56d4dd">Node</tspan><tspan fill="#e6edf3">  </tspan><tspan fill="#e3b341">(virtual)</tspan></text>
+  <text x="22" y="400.0" class="l" style="animation-delay: 2.92s" xml:space="preserve"></text>
+  <text x="22" y="419.5" textLength="23.9" lengthAdjust="spacing" class="l" style="animation-delay: 2.96s" xml:space="preserve"><tspan fill="#6e7681">  ⋮</tspan></text>
+  <text x="22" y="439.0" textLength="198.8" lengthAdjust="spacing" class="l" style="animation-delay: 3.01s" xml:space="preserve"><tspan fill="#e6edf3" font-weight="700">std::bad_array_new_length</tspan></text>
+  <text x="22" y="458.5" textLength="143.1" lengthAdjust="spacing" class="l" style="animation-delay: 3.05s" xml:space="preserve"><tspan fill="#e6edf3">└── </tspan><tspan fill="#56d4dd">std::bad_alloc</tspan></text>
+  <text x="22" y="478.0" textLength="174.9" lengthAdjust="spacing" class="l" style="animation-delay: 3.10s" xml:space="preserve"><tspan fill="#e6edf3">    └── </tspan><tspan fill="#56d4dd">std::exception</tspan></text>
+  <g class="l" style="animation-delay: 3.74s"><text x="22" y="497.5" textLength="389.6" lengthAdjust="spacing" xml:space="preserve"><tspan fill="#7ee787" font-weight="700">$ </tspan><tspan fill="#e6edf3" font-weight="700">rtti-dump --mermaid sample64.dll | grep Diamond</tspan></text><g class="ty22"><rect class="cover" x="37.9" y="483.0" width="602.1" height="19.5" fill="#0d1117"/><rect class="cu22 cover" x="37.9" y="486.0" width="8.0" height="14.5" fill="#e6edf3" opacity="0.85"/></g></g>
+  <text x="22" y="517.0" textLength="238.5" lengthAdjust="spacing" class="l" style="animation-delay: 5.55s" xml:space="preserve"><tspan fill="#e6edf3">    class c_Diamond[&quot;Diamond&quot;]</tspan></text>
+  <text x="22" y="536.5" textLength="198.8" lengthAdjust="spacing" class="l" style="animation-delay: 5.60s" xml:space="preserve"><tspan fill="#e6edf3">    c_Left &lt;|-- c_Diamond</tspan></text>
+  <text x="22" y="556.0" textLength="206.7" lengthAdjust="spacing" class="l" style="animation-delay: 5.64s" xml:space="preserve"><tspan fill="#e6edf3">    c_Right &lt;|-- c_Diamond</tspan></text>
+  <g class="l" style="animation-delay: 5.69s"><text x="22" y="575.5"><tspan fill="#7ee787" font-weight="700">$</tspan></text><rect class="cursor" x="37.9" y="564.0" width="8.0" height="14.5" fill="#e6edf3" opacity="0.85"/></g>
+</svg>

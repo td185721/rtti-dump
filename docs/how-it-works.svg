@@ -1,0 +1,106 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="560" viewBox="0 0 1200 560" role="img" aria-labelledby="t d">
+  <title id="t">MSVC RTTI on disk</title>
+  <desc id="d">The Complete Object Locator, TypeDescriptor, Class Hierarchy Descriptor and Base Class Array of Diamond in sample64.dll.</desc>
+  <style>
+    text { font-family: ui-monospace, 'JetBrains Mono', 'Cascadia Code', SFMono-Regular, Consolas, 'Liberation Mono', Menlo, monospace; }
+    .flow { fill: none; stroke-dasharray: 2 10; stroke-linecap: round; animation: flow 1.3s linear infinite; }
+    @keyframes flow { to { stroke-dashoffset: -24; } }
+    .fade { opacity: 0; animation: fade 0.6s ease-out forwards; }
+    @keyframes fade { to { opacity: 1; } }
+    
+    @media (prefers-reduced-motion: reduce) { .flow { animation: none; } .fade { animation: none; opacity: 1; } .anim { animation: none !important; } }
+  </style>
+  <defs>
+    <pattern id="dots" width="22" height="22" patternUnits="userSpaceOnUse"><circle cx="2" cy="2" r="1" fill="#1c2128"/></pattern>
+    <pattern id="hatch" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><line x1="0" y1="0" x2="0" y2="6" stroke="#30363d" stroke-width="2"/></pattern>
+    <linearGradient id="edge" x1="0" x2="1"><stop offset="0" stop-color="#d2a8ff"/><stop offset="0.6" stop-color="#d2a8ff" stop-opacity="0.35"/><stop offset="1" stop-color="#d2a8ff" stop-opacity="0"/></linearGradient>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#8b949e"/></marker>
+    <clipPath id="card"><rect width="1200" height="560" rx="16"/></clipPath>
+  </defs>
+  <g clip-path="url(#card)">
+    <rect width="1200" height="560" fill="#0d1117"/>
+    <rect width="1200" height="560" fill="url(#dots)"/>
+    <rect width="1200" height="3" fill="url(#edge)"/>
+  </g>
+  <rect x="0.75" y="0.75" width="1198.5" height="558.5" rx="15.5" fill="none" stroke="#30363d" stroke-width="1.5"/>
+  <text x="40" y="48" font-size="13" letter-spacing="2" fill="#d2a8ff">MSVC RTTI ON DISK · class Diamond in sample64.dll</text>
+  <text x="40" y="76" font-size="13" fill="#8b949e" text-anchor="start" xml:space="preserve">Real records read from the test fixture. Every pointer is an RVA, so rtti-dump can follow them in the file itself.</text>
+  <rect x="40" y="120" width="200" height="103" rx="8" fill="#161b22" stroke="#6e7681"/>
+  <rect x="40" y="120" width="200" height="28" rx="8" fill="#6e7681" fill-opacity="0.14"/>
+  <text x="52" y="139" font-size="12" fill="#e6edf3" text-anchor="start" font-weight="700" xml:space="preserve">vtable (Diamond)</text>
+  <text x="52" y="168" font-size="11.5" fill="#8b949e" text-anchor="start" xml:space="preserve">[-1]</text>
+  <text x="228" y="168" font-size="11.5" fill="#d2a8ff" text-anchor="end" xml:space="preserve">→ COL</text>
+  <text x="52" y="189" font-size="11.5" fill="#8b949e" text-anchor="start" xml:space="preserve">[0]</text>
+  <text x="228" y="189" font-size="11.5" fill="#6e7681" text-anchor="end" xml:space="preserve">fn</text>
+  <text x="52" y="210" font-size="11.5" fill="#8b949e" text-anchor="start" xml:space="preserve">[1]</text>
+  <text x="228" y="210" font-size="11.5" fill="#6e7681" text-anchor="end" xml:space="preserve">fn</text>
+  <rect x="300" y="120" width="270" height="187" rx="8" fill="#161b22" stroke="#d2a8ff"/>
+  <rect x="300" y="120" width="270" height="28" rx="8" fill="#d2a8ff" fill-opacity="0.14"/>
+  <text x="312" y="139" font-size="12" fill="#e6edf3" text-anchor="start" font-weight="700" xml:space="preserve">Complete Object Locator</text>
+  <text x="312" y="168" font-size="11.5" fill="#8b949e" text-anchor="start" xml:space="preserve">rva</text>
+  <text x="558" y="168" font-size="11.5" fill="#79c0ff" text-anchor="end" xml:space="preserve">0x3a38</text>
+  <text x="312" y="189" font-size="11.5" fill="#8b949e" text-anchor="start" xml:space="preserve">signature</text>
+  <text x="558" y="189" font-size="11.5" fill="#c9d1d9" text-anchor="end" xml:space="preserve">1 (x64)</text>
+  <text x="312" y="210" font-size="11.5" fill="#8b949e" text-anchor="start" xml:space="preserve">offset</text>
+  <text x="558" y="210" font-size="11.5" fill="#c9d1d9" text-anchor="end" xml:space="preserve">0x0</text>
+  <text x="312" y="231" font-size="11.5" fill="#8b949e" text-anchor="start" xml:space="preserve">cdOffset</text>
+  <text x="558" y="231" font-size="11.5" fill="#c9d1d9" text-anchor="end" xml:space="preserve">0x0</text>
+  <text x="312" y="252" font-size="11.5" fill="#8b949e" text-anchor="start" xml:space="preserve">pTypeDescriptor</text>
+  <text x="558" y="252" font-size="11.5" fill="#d2a8ff" text-anchor="end" xml:space="preserve">0x5270</text>
+  <text x="312" y="273" font-size="11.5" fill="#8b949e" text-anchor="start" xml:space="preserve">pClassDescriptor</text>
+  <text x="558" y="273" font-size="11.5" fill="#d2a8ff" text-anchor="end" xml:space="preserve">0x3a60</text>
+  <text x="312" y="294" font-size="11.5" fill="#8b949e" text-anchor="start" xml:space="preserve">pSelf</text>
+  <text x="558" y="294" font-size="11.5" fill="#7ee787" text-anchor="end" xml:space="preserve">0x3a38 = rva ✓</text>
+  <rect x="640" y="110" width="250" height="82" rx="8" fill="#161b22" stroke="#d2a8ff"/>
+  <rect x="640" y="110" width="250" height="28" rx="8" fill="#d2a8ff" fill-opacity="0.14"/>
+  <text x="652" y="129" font-size="12" fill="#e6edf3" text-anchor="start" font-weight="700" xml:space="preserve">TypeDescriptor</text>
+  <text x="652" y="158" font-size="11.5" fill="#8b949e" text-anchor="start" xml:space="preserve">rva</text>
+  <text x="878" y="158" font-size="11.5" fill="#79c0ff" text-anchor="end" xml:space="preserve">0x5270</text>
+  <text x="652" y="179" font-size="11.5" fill="#8b949e" text-anchor="start" xml:space="preserve">name</text>
+  <text x="878" y="179" font-size="11.5" fill="#e6edf3" text-anchor="end" xml:space="preserve">.?AUDiamond@@</text>
+  <rect x="640" y="230" width="250" height="124" rx="8" fill="#161b22" stroke="#d2a8ff"/>
+  <rect x="640" y="230" width="250" height="28" rx="8" fill="#d2a8ff" fill-opacity="0.14"/>
+  <text x="652" y="249" font-size="12" fill="#e6edf3" text-anchor="start" font-weight="700" xml:space="preserve">Class Hierarchy Descriptor</text>
+  <text x="652" y="278" font-size="11.5" fill="#8b949e" text-anchor="start" xml:space="preserve">rva</text>
+  <text x="878" y="278" font-size="11.5" fill="#79c0ff" text-anchor="end" xml:space="preserve">0x3a60</text>
+  <text x="652" y="299" font-size="11.5" fill="#8b949e" text-anchor="start" xml:space="preserve">attributes</text>
+  <text x="878" y="299" font-size="11.5" fill="#e3b341" text-anchor="end" xml:space="preserve">0x3 multiple+virtual</text>
+  <text x="652" y="320" font-size="11.5" fill="#8b949e" text-anchor="start" xml:space="preserve">numBaseClasses</text>
+  <text x="878" y="320" font-size="11.5" fill="#c9d1d9" text-anchor="end" xml:space="preserve">5</text>
+  <text x="652" y="341" font-size="11.5" fill="#8b949e" text-anchor="start" xml:space="preserve">pBaseClassArray</text>
+  <text x="878" y="341" font-size="11.5" fill="#d2a8ff" text-anchor="end" xml:space="preserve">0x3a78</text>
+  <rect x="930" y="230" width="240" height="145" rx="8" fill="#161b22" stroke="#d2a8ff"/>
+  <rect x="930" y="230" width="240" height="28" rx="8" fill="#d2a8ff" fill-opacity="0.14"/>
+  <text x="942" y="249" font-size="12" fill="#e6edf3" text-anchor="start" font-weight="700" xml:space="preserve">Base Class Array → BCDs</text>
+  <text x="942" y="278" font-size="11.5" fill="#8b949e" text-anchor="start" xml:space="preserve">[0] 0x3aa8</text>
+  <text x="1158" y="278" font-size="11.5" fill="#e6edf3" text-anchor="end" xml:space="preserve">Diamond  (0,-1,0)  4</text>
+  <text x="942" y="299" font-size="11.5" fill="#8b949e" text-anchor="start" xml:space="preserve">[1] 0x3ad0</text>
+  <text x="1158" y="299" font-size="11.5" fill="#c9d1d9" text-anchor="end" xml:space="preserve">Left  (16,-1,0)  1</text>
+  <text x="942" y="320" font-size="11.5" fill="#8b949e" text-anchor="start" xml:space="preserve">[2] 0x3af8</text>
+  <text x="1158" y="320" font-size="11.5" fill="#e3b341" text-anchor="end" xml:space="preserve">Node  (0,16,4)  0</text>
+  <text x="942" y="341" font-size="11.5" fill="#8b949e" text-anchor="start" xml:space="preserve">[3] 0x39c0</text>
+  <text x="1158" y="341" font-size="11.5" fill="#c9d1d9" text-anchor="end" xml:space="preserve">Right  (0,-1,0)  1</text>
+  <text x="942" y="362" font-size="11.5" fill="#8b949e" text-anchor="start" xml:space="preserve">[4] 0x3af8</text>
+  <text x="1158" y="362" font-size="11.5" fill="#e3b341" text-anchor="end" xml:space="preserve">Node  (0,16,4)  0</text>
+  <text x="1170" y="222" font-size="9.5" fill="#6e7681" text-anchor="end" xml:space="preserve">name  PMD(mdisp,pdisp,vdisp)  contained</text>
+  <path d="M240,164 L296,164" fill="none" stroke="#8b949e" stroke-opacity="0.45" stroke-width="1.4" marker-end="url(#arrow)"/>
+  <path class="flow" style="animation-delay: -0.00s" d="M240,164 L296,164" stroke="#d2a8ff" stroke-width="2"/>
+  <path d="M570,248 C605,248 605,154 636,154" fill="none" stroke="#8b949e" stroke-opacity="0.45" stroke-width="1.4" marker-end="url(#arrow)"/>
+  <path class="flow" style="animation-delay: -0.30s" d="M570,248 C605,248 605,154 636,154" stroke="#d2a8ff" stroke-width="2"/>
+  <path d="M570,269 C605,269 605,274 636,274" fill="none" stroke="#8b949e" stroke-opacity="0.45" stroke-width="1.4" marker-end="url(#arrow)"/>
+  <path class="flow" style="animation-delay: -0.60s" d="M570,269 C605,269 605,274 636,274" stroke="#d2a8ff" stroke-width="2"/>
+  <path d="M890,337 C910,337 910,274 926,274" fill="none" stroke="#8b949e" stroke-opacity="0.45" stroke-width="1.4" marker-end="url(#arrow)"/>
+  <path class="flow" style="animation-delay: -0.90s" d="M890,337 C910,337 910,274 926,274" stroke="#d2a8ff" stroke-width="2"/>
+  <path d="M570,290 C600,290 600,188 586,164 L574,164" fill="none" stroke="#7ee787" stroke-opacity="0.6" stroke-dasharray="3 3" marker-end="url(#arrow)"/>
+  <rect x="40" y="420" width="560" height="118" rx="8" fill="#161b22" stroke="#30363d"/>
+  <text x="56" y="442" font-size="11.5" fill="#8b949e" text-anchor="start" xml:space="preserve">rtti-dump --tree rebuilds the hierarchy from the</text>
+  <text x="56" y="458" font-size="11.5" fill="#8b949e" text-anchor="start" xml:space="preserve">array: each entry spans 1 + contained entries.</text>
+  <text x="400" y="444" font-size="12" fill="#e6edf3" text-anchor="start" xml:space="preserve">Diamond</text>
+  <text x="400" y="463" font-size="12" fill="#79c0ff" text-anchor="start" xml:space="preserve">├── Left  +0x10</text>
+  <text x="400" y="482" font-size="12" fill="#e3b341" text-anchor="start" xml:space="preserve">│   └── Node  (virtual)</text>
+  <text x="400" y="501" font-size="12" fill="#79c0ff" text-anchor="start" xml:space="preserve">└── Right</text>
+  <text x="400" y="520" font-size="12" fill="#e3b341" text-anchor="start" xml:space="preserve">    └── Node  (virtual)</text>
+  <text x="640" y="470" font-size="11.5" fill="#8b949e" text-anchor="start" xml:space="preserve">pdisp ≥ 0 marks a virtual base: Node is found through the</text>
+  <text x="640" y="488" font-size="11.5" fill="#8b949e" text-anchor="start" xml:space="preserve">vbtable pointer at +16, entry +4. mdisp is the offset of a</text>
+  <text x="640" y="506" font-size="11.5" fill="#8b949e" text-anchor="start" xml:space="preserve">non-virtual base: Left starts 0x10 bytes into Diamond.</text>
+</svg>

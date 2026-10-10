@@ -1,0 +1,40 @@
+[*] scanning for type descriptors in .data / .rdata ...
+    found 14 candidate type descriptor(s)
+[*] scanning for Complete Object Locators ...
+    found 14 COL(s)
+
+shapes::Circle
+└── shapes::Shape
+
+shapes::Square
+└── shapes::Shape
+
+io::Buffer
+├── io::Reader
+└── io::Writer  +0x8
+
+Node
+
+Left
+└── Node  (virtual)
+
+Right
+└── Node  (virtual)
+
+Diamond
+├── Left  +0x10
+│   └── Node  (virtual)
+└── Right
+    └── Node  (virtual)
+
+type_info
+
+std::exception
+
+std::bad_array_new_length
+└── std::bad_alloc
+    └── std::exception
+
+std::bad_alloc
+└── std::exception
+

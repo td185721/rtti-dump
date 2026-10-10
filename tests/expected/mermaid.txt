@@ -1,0 +1,25 @@
+classDiagram
+    class c_shapes__Circle["shapes::Circle"]
+    class c_shapes__Shape["shapes::Shape"]
+    c_shapes__Shape <|-- c_shapes__Circle
+    class c_shapes__Square["shapes::Square"]
+    c_shapes__Shape <|-- c_shapes__Square
+    class c_io__Buffer["io::Buffer"]
+    class c_io__Reader["io::Reader"]
+    c_io__Reader <|-- c_io__Buffer
+    class c_io__Writer["io::Writer"]
+    c_io__Writer <|-- c_io__Buffer
+    class c_Node["Node"]
+    class c_Left["Left"]
+    c_Node <|-- c_Left : virtual
+    class c_Right["Right"]
+    c_Node <|-- c_Right : virtual
+    class c_Diamond["Diamond"]
+    c_Left <|-- c_Diamond
+    c_Right <|-- c_Diamond
+    class c_type_info["type_info"]
+    class c_std__exception["std::exception"]
+    class c_std__bad_array_new_length["std::bad_array_new_length"]
+    class c_std__bad_alloc["std::bad_alloc"]
+    c_std__bad_alloc <|-- c_std__bad_array_new_length
+    c_std__exception <|-- c_std__bad_alloc

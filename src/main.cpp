@@ -13,13 +13,17 @@
 // files on any host OS.
 
 #include "pe_format.hpp"
+#include "term.hpp"
 
+#include <algorithm>
+#include <cctype>
 #include <cstdint>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
 #include <fstream>
 #include <optional>
+#include <set>
 #include <string>
 #include <unordered_set>
 #include <vector>
@@ -295,70 +299,241 @@ std::string type_name_from_rva(const PEView& view, std::uint32_t rva) {
 
 }  // namespace
 
+namespace {
+
+struct BaseEntry {
+    std::string   name;           // mangled type_info name
+    std::uint32_t contained = 0;  // how many entries below this one are its own bases
+    PMD           where{};
+    bool          resolved = false;
+};
+
+struct ClassInfo {
+    enum class Status { Ok, NoHierarchy, NoArray, Truncated };
+    std::string            name;  // mangled type_info name
+    Status                 status = Status::Ok;
+    std::uint32_t          declared = 0;
+    std::vector<BaseEntry> bases;  // pre-order: [0] is the class itself
+};
+
+ClassInfo read_class(const PEView& view, const COLHit& col) {
+    ClassInfo info;
+    info.name = type_name_from_rva(view, col.type_rva);
+    const auto* chd = view.at_rva<ClassHierarchyDescriptor>(col.class_desc_rva);
+    if (!chd) {
+        info.status = ClassInfo::Status::NoHierarchy;
+        return info;
+    }
+    const auto base_array_off = view.rva_to_offset(chd->pBaseClassArray);
+    if (!base_array_off) {
+        info.status = ClassInfo::Status::NoArray;
+        return info;
+    }
+    if (chd->numBaseClasses > (view.size - *base_array_off) / sizeof(std::uint32_t)) {
+        info.status = ClassInfo::Status::Truncated;
+        return info;
+    }
+    info.declared = chd->numBaseClasses;
+    const auto* base_rvas = reinterpret_cast<const std::uint32_t*>(view.data + *base_array_off);
+    for (std::uint32_t i = 0; i < chd->numBaseClasses; ++i) {
+        BaseEntry entry;
+        if (const auto* bcd = view.at_rva<BaseClassDescriptor>(base_rvas[i])) {
+            entry.name      = type_name_from_rva(view, bcd->pTypeDescriptor);
+            entry.contained = bcd->numContainedBases;
+            entry.where     = bcd->where;
+            entry.resolved  = true;
+        }
+        info.bases.push_back(std::move(entry));
+    }
+    return info;
+}
+
+using Namer = std::string (*)(const std::string&);
+
+std::string raw_name(const std::string& name) { return name; }
+std::string pretty_name(const std::string& name) { return demangle::type_info(name); }
+
+// Default view: every COL with its flat base class array.
+void print_list(const ClassInfo& c, Namer show) {
+    const auto *B = term::bold(), *C = term::cyan(), *D = term::dim(), *R = term::reset();
+    std::printf("class %s%s%s\n", B, show(c.name).c_str(), R);
+    switch (c.status) {
+        case ClassInfo::Status::NoHierarchy:
+            std::printf("    <class hierarchy descriptor unresolved>\n\n");
+            return;
+        case ClassInfo::Status::NoArray:
+            std::printf("    <base class array unresolved>\n\n");
+            return;
+        case ClassInfo::Status::Truncated:
+            std::printf("    <base class array truncated>\n\n");
+            return;
+        case ClassInfo::Status::Ok:
+            break;
+    }
+    std::printf("    %sbase classes (%u):%s\n", D, c.declared, R);
+    for (std::size_t i = 0; i < c.bases.size(); ++i) {
+        const auto& e = c.bases[i];
+        if (!e.resolved) {
+            std::printf("      [%zu] <unresolved>\n", i);
+            continue;
+        }
+        std::printf("      %s[%zu]%s %s%s%s  %s(mdisp=%d pdisp=%d vdisp=%d)%s\n", D, i, R, C,
+                    show(e.name).c_str(), R, D, e.where.mdisp, e.where.pdisp, e.where.vdisp, R);
+    }
+    std::printf("\n");
+}
+
+// The base class array is a pre-order walk of the inheritance tree in which
+// every entry records how many entries below it belong to it, so the tree
+// can be rebuilt from it: entry i's direct bases start at i + 1 and each
+// spans contained + 1 entries.
+std::size_t subtree_end(const ClassInfo& c, std::size_t i, std::size_t limit) {
+    return std::min<std::size_t>(limit, i + 1 + c.bases[i].contained);
+}
+
+std::size_t print_subtree(const ClassInfo& c, std::size_t i, std::size_t limit,
+                          const std::string& prefix, bool last, Namer show) {
+    const auto& e = c.bases[i];
+    const auto end = subtree_end(c, i, limit);
+    if (i == 0) {
+        std::printf("%s%s%s\n", term::bold(), show(e.name).c_str(), term::reset());
+    } else {
+        std::printf("%s%s%s%s%s", prefix.c_str(), last ? "└── " : "├── ",
+                    term::cyan(), e.resolved ? show(e.name).c_str() : "<unresolved>", term::reset());
+        if (e.where.pdisp >= 0) {
+            std::printf("  %s(virtual)%s", term::yellow(), term::reset());
+        } else if (e.where.mdisp != 0) {
+            std::printf("  %s+0x%x%s", term::dim(), static_cast<unsigned>(e.where.mdisp), term::reset());
+        }
+        std::printf("\n");
+    }
+    const std::string child_prefix = i == 0 ? "" : prefix + (last ? "    " : "│   ");
+    for (std::size_t j = i + 1; j < end;) {
+        const auto child_end = subtree_end(c, j, end);
+        print_subtree(c, j, end, child_prefix, child_end >= end, show);
+        j = child_end;
+    }
+    return end;
+}
+
+// Direct bases of the class at entry 0, with whether each is virtual.
+std::vector<std::pair<const BaseEntry*, bool>> direct_bases(const ClassInfo& c) {
+    std::vector<std::pair<const BaseEntry*, bool>> out;
+    if (c.bases.empty()) return out;
+    const auto end = subtree_end(c, 0, c.bases.size());
+    for (std::size_t j = 1; j < end; j = subtree_end(c, j, end)) {
+        if (c.bases[j].resolved) out.emplace_back(&c.bases[j], c.bases[j].where.pdisp >= 0);
+    }
+    return out;
+}
+
+std::string mermaid_id(const std::string& label) {
+    std::string id = "c_";
+    for (unsigned char ch : label) id += std::isalnum(ch) ? static_cast<char>(ch) : '_';
+    return id;
+}
+
+std::string mermaid_label(const std::string& label) {
+    std::string out;
+    for (char ch : label) out += ch == '"' ? '\'' : ch;
+    return out;
+}
+
+// Mermaid class diagram (renders natively on GitHub): one node per class,
+// one inheritance edge per direct base.
+void print_mermaid(const std::vector<ClassInfo>& classes) {
+    std::printf("classDiagram\n");
+    std::set<std::string> declared, edges;
+    const auto declare = [&](const std::string& label) {
+        const auto id = mermaid_id(label);
+        if (declared.insert(id).second) {
+            std::printf("    class %s[\"%s\"]\n", id.c_str(), mermaid_label(label).c_str());
+        }
+        return id;
+    };
+    for (const auto& c : classes) {
+        if (c.status != ClassInfo::Status::Ok) continue;
+        const auto child = declare(pretty_name(c.name));
+        for (const auto& [base, is_virtual] : direct_bases(c)) {
+            const auto parent = declare(pretty_name(base->name));
+            std::string edge = "    " + parent + " <|-- " + child + (is_virtual ? " : virtual" : "");
+            if (edges.insert(edge).second) std::printf("%s\n", edge.c_str());
+        }
+    }
+}
+
+}  // namespace
+
 int main(int argc, char** argv) {
+    enum class View { List, Tree, Mermaid };
+    View view_mode = View::List;
     bool demangle_names = false;
+    bool bad_flag = false;
+    term::Mode color = term::Mode::Auto;
     const char* path = nullptr;
 
     for (int i = 1; i < argc; ++i) {
-        if (std::strcmp(argv[i], "--demangle") == 0 ||
-            std::strcmp(argv[i], "-d") == 0) {
+        const int cf = term::parse_flag(argc, argv, i, color);
+        if (cf != 0) {
+            bad_flag |= cf < 0;
+        } else if (std::strcmp(argv[i], "--demangle") == 0 || std::strcmp(argv[i], "-d") == 0) {
             demangle_names = true;
+        } else if (std::strcmp(argv[i], "--tree") == 0 || std::strcmp(argv[i], "-t") == 0) {
+            view_mode = View::Tree;
+        } else if (std::strcmp(argv[i], "--mermaid") == 0) {
+            view_mode = View::Mermaid;
         } else if (!path) {
             path = argv[i];
         }
     }
 
-    if (!path) {
+    if (!path || bad_flag) {
         std::fprintf(stderr,
-                     "usage: %s [--demangle|-d] <file.exe|file.dll>\n",
+                     "usage: %s [--demangle|-d] [--tree|-t|--mermaid] [--color auto|always|never]"
+                     " <file.exe|file.dll>\n",
                      argc ? argv[0] : "rtti-dump");
         return 2;
     }
+    // Mermaid output is meant to be pasted into documents, so it is never colored.
+    term::init(view_mode == View::Mermaid ? term::Mode::Never : color);
+    if (view_mode == View::Tree) term::utf8_console();
 
     auto image = read_file(path);
     auto view  = load_pe(image);
 
-    std::printf("[*] scanning for type descriptors in .data / .rdata ...\n");
+    const auto *D = term::dim(), *R = term::reset();
+    const bool progress = view_mode != View::Mermaid;
+    if (progress) std::printf("%s[*] scanning for type descriptors in .data / .rdata ...%s\n", D, R);
     const auto types = scan_type_descriptors(view);
-    std::printf("    found %zu candidate type descriptor(s)\n", types.size());
+    if (progress) std::printf("%s    found %zu candidate type descriptor(s)%s\n", D, types.size(), R);
 
     std::unordered_set<std::uint32_t> type_rvas;
     for (const auto& t : types) type_rvas.insert(t.rva);
 
-    std::printf("[*] scanning for Complete Object Locators ...\n");
+    if (progress) std::printf("%s[*] scanning for Complete Object Locators ...%s\n", D, R);
     const auto cols = scan_cols(view, type_rvas);
-    std::printf("    found %zu COL(s)\n\n", cols.size());
+    if (progress) std::printf("%s    found %zu COL(s)%s\n\n", D, cols.size(), R);
 
-    const auto show = [&](const std::string& raw) {
-        return demangle_names ? demangle::type_info(raw) : raw;
-    };
+    std::vector<ClassInfo> classes;
+    for (const auto& col : cols) classes.push_back(read_class(view, col));
 
-    for (const auto& col : cols) {
-        const auto raw = type_name_from_rva(view, col.type_rva);
-        std::printf("class %s\n", show(raw).c_str());
-
-        // Walk and print the base class list with the same demangle setting.
-        const auto* chd = view.at_rva<ClassHierarchyDescriptor>(col.class_desc_rva);
-        if (!chd) { std::printf("    <class hierarchy descriptor unresolved>\n\n"); continue; }
-        const auto base_array_off = view.rva_to_offset(chd->pBaseClassArray);
-        if (!base_array_off) { std::printf("    <base class array unresolved>\n\n"); continue; }
-        if (chd->numBaseClasses > (view.size - *base_array_off) / sizeof(std::uint32_t)) {
-            std::printf("    <base class array truncated>\n\n");
-            continue;
-        }
-        const auto* base_rvas = reinterpret_cast<const std::uint32_t*>(
-            view.data + *base_array_off);
-        std::printf("    base classes (%u):\n", chd->numBaseClasses);
-        for (std::uint32_t i = 0; i < chd->numBaseClasses; ++i) {
-            const auto* bcd = view.at_rva<BaseClassDescriptor>(base_rvas[i]);
-            if (!bcd) { std::printf("      [%u] <unresolved>\n", i); continue; }
-            const auto base_name = type_name_from_rva(view, bcd->pTypeDescriptor);
-            std::printf("      [%u] %s  (mdisp=%d pdisp=%d vdisp=%d)\n",
-                        i, show(base_name).c_str(),
-                        bcd->where.mdisp, bcd->where.pdisp, bcd->where.vdisp);
-        }
-        std::printf("\n");
+    if (view_mode == View::Mermaid) {
+        print_mermaid(classes);
+        return 0;
     }
 
+    const Namer show = demangle_names ? pretty_name : raw_name;
+    if (view_mode == View::List) {
+        for (const auto& c : classes) print_list(c, show);
+        return 0;
+    }
+
+    // Tree view: one tree per class (a class has one COL per vtable).
+    std::set<std::string> seen;
+    for (const auto& c : classes) {
+        if (c.status != ClassInfo::Status::Ok || c.bases.empty() || !seen.insert(c.name).second) continue;
+        print_subtree(c, 0, c.bases.size(), "", true, show);
+        std::printf("\n");
+    }
     return 0;
 }

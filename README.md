@@ -16,6 +16,10 @@
 
 `rtti-dump` recovers C++ class hierarchies from x64 Windows binaries built with MSVC. It finds the Run-Time Type Information that the compiler emits for every polymorphic class (it has to, for `dynamic_cast` and `typeid`), even when the binary has no symbols. For each class it prints the base classes and where each base subobject lives inside the object. Single, multiple and virtual inheritance are all covered.
 
+<p align="center">
+  <img src="docs/demo.svg" width="640" alt="Animated terminal demo: rtti-dump --tree draws class hierarchies, and --mermaid outputs a class diagram">
+</p>
+
 ## Example
 
 Real output for the test fixture, an x64 DLL built from [`tests/fixtures/sample.cpp`](tests/fixtures/sample.cpp). Its `Diamond` class inherits `Left` and `Right`, which both share a virtual `Node` base:
@@ -51,16 +55,55 @@ How to read the displacements (`PMD`):
 
 A class shows up once per vtable, because MSVC emits one Complete Object Locator per vtable. That is why `io::Buffer` (two bases with virtual functions) is listed twice in the full output.
 
-## How it works
+## Views
+
+**`--tree`** rebuilds each class's inheritance tree from its base class array. Virtual bases are marked, and so is the offset of every non-virtual base that is not at the start of the object:
 
 ```text
-vtable[-1] ──► Complete Object Locator      signature = 1 on x64; pSelf = its own RVA
-                 ├─► TypeDescriptor          ".?AVDiamond@@"  (mangled type_info name)
-                 └─► Class Hierarchy Descriptor
-                       └─► Base Class Array ──► Base Class Descriptor[i]
-                                                  ├─► TypeDescriptor of the base
-                                                  └── PMD { mdisp, pdisp, vdisp }
+$ rtti-dump --tree --demangle sample64.dll
+...
+Diamond
+├── Left  +0x10
+│   └── Node  (virtual)
+└── Right
+    └── Node  (virtual)
 ```
+
+**`--mermaid`** prints a [Mermaid](https://mermaid.js.org) class diagram that renders directly in GitHub Markdown, wikis and many documentation tools. This is the real output for the fixture:
+
+```mermaid
+classDiagram
+    class c_shapes__Circle["shapes::Circle"]
+    class c_shapes__Shape["shapes::Shape"]
+    c_shapes__Shape <|-- c_shapes__Circle
+    class c_shapes__Square["shapes::Square"]
+    c_shapes__Shape <|-- c_shapes__Square
+    class c_io__Buffer["io::Buffer"]
+    class c_io__Reader["io::Reader"]
+    c_io__Reader <|-- c_io__Buffer
+    class c_io__Writer["io::Writer"]
+    c_io__Writer <|-- c_io__Buffer
+    class c_Node["Node"]
+    class c_Left["Left"]
+    c_Node <|-- c_Left : virtual
+    class c_Right["Right"]
+    c_Node <|-- c_Right : virtual
+    class c_Diamond["Diamond"]
+    c_Left <|-- c_Diamond
+    c_Right <|-- c_Diamond
+    class c_type_info["type_info"]
+    class c_std__exception["std::exception"]
+    class c_std__bad_array_new_length["std::bad_array_new_length"]
+    class c_std__bad_alloc["std::bad_alloc"]
+    c_std__bad_alloc <|-- c_std__bad_array_new_length
+    c_std__exception <|-- c_std__bad_alloc
+```
+
+## How it works
+
+<p align="center">
+  <img src="docs/how-it-works.svg" width="100%" alt="Diamond's Complete Object Locator, TypeDescriptor, Class Hierarchy Descriptor and Base Class Array, with their real RVAs from sample64.dll">
+</p>
 
 1. Scan `.data` and `.rdata` for `TypeDescriptor` candidates: a mangled name starting with `.?A`.
 2. Scan `.rdata` for Complete Object Locators that reference one of those descriptors and whose `pSelf` field equals their own RVA. That self-reference check removes almost all false positives.
@@ -81,12 +124,15 @@ ctest --test-dir build -C Release      # optional: run the test suite
 ## Usage
 
 ```text
-rtti-dump [--demangle|-d] <file.exe|file.dll>
+rtti-dump [--demangle|-d] [--tree|-t | --mermaid] [--color auto|always|never] <file.exe|file.dll>
 ```
 
 | Flag | Effect |
 |---|---|
 | `--demangle`, `-d` | Turn `type_info` names such as `.?AVWidget@ui@@` into `ui::Widget`. Template names are left mangled. |
+| `--tree`, `-t` | Show each class once, as an inheritance tree. |
+| `--mermaid` | Print a Mermaid class diagram of all classes (never colored). |
+| `--color WHEN` | `auto` (default) colors output only on a terminal; `always` and `never` force it. Setting `NO_COLOR` turns colors off. |
 
 Exit status is `0` on success, `1` for an unreadable, malformed or non-x64 file, and `2` for a usage error.
 
@@ -101,7 +147,7 @@ The built-in demangler handles the common `.?A[VUW]Name@ns@...@@` form. Template
 
 ## Testing
 
-`ctest` compares the output for the fixture DLL, mangled and demangled, with golden files, and checks that x86 input and missing arguments fail with the right exit codes. CI runs on Windows (MSVC), Linux (GCC) and macOS (Clang), and cross-builds with MinGW-w64. When the tool moved from `<windows.h>` to a portable PE header, its output was compared with the previous build on 250 `System32` DLLs (55,000 output lines), and there were no differences. Header, section table, base class array and name reads are all bounds-checked against the file.
+`ctest` compares the output for the fixture DLL with golden files (mangled, demangled, `--tree`, `--mermaid` and colored), and checks that x86 input and missing arguments fail with the right exit codes. CI runs on Windows (MSVC), Linux (GCC) and macOS (Clang), and cross-builds with MinGW-w64. When the tool moved from `<windows.h>` to a portable PE header, its output was compared with the previous build on 250 `System32` DLLs (55,000 output lines), and there were no differences. Header, section table, base class array and name reads are all bounds-checked against the file.
 
 ## References
 

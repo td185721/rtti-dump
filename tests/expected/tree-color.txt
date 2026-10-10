@@ -1,0 +1,40 @@
+[2m[*] scanning for type descriptors in .data / .rdata ...[0m
+[2m    found 14 candidate type descriptor(s)[0m
+[2m[*] scanning for Complete Object Locators ...[0m
+[2m    found 14 COL(s)[0m
+
+[1mshapes::Circle[0m
+└── [36mshapes::Shape[0m
+
+[1mshapes::Square[0m
+└── [36mshapes::Shape[0m
+
+[1mio::Buffer[0m
+├── [36mio::Reader[0m
+└── [36mio::Writer[0m  [2m+0x8[0m
+
+[1mNode[0m
+
+[1mLeft[0m
+└── [36mNode[0m  [33m(virtual)[0m
+
+[1mRight[0m
+└── [36mNode[0m  [33m(virtual)[0m
+
+[1mDiamond[0m
+├── [36mLeft[0m  [2m+0x10[0m
+│   └── [36mNode[0m  [33m(virtual)[0m
+└── [36mRight[0m
+    └── [36mNode[0m  [33m(virtual)[0m
+
+[1mtype_info[0m
+
+[1mstd::exception[0m
+
+[1mstd::bad_array_new_length[0m
+└── [36mstd::bad_alloc[0m
+    └── [36mstd::exception[0m
+
+[1mstd::bad_alloc[0m
+└── [36mstd::exception[0m
+
